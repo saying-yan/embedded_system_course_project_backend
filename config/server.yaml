@@ -1,0 +1,10 @@
+web:
+  port: 80
+  cert_file:
+  key_file:
+connector:
+  port: 8888
+logger:
+  path: ./log/backend
+  stdout: true
+  level: debug
