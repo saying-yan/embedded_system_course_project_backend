@@ -17,7 +17,8 @@ func NewServer(configFile string) (*Server, error) {
 		fmt.Printf("load config %s error: %s\n", configFile, err.Error())
 		return nil, err
 	}
-	err = logger.InitLogger(config.LoggerConf)
+
+	err = logger.InitLoggerWithConf(config.LoggerConf)
 	if err != nil {
 		fmt.Printf("init logger error: %s", err.Error())
 		return nil, err
@@ -34,5 +35,4 @@ func (s *Server) Serve() {
 	s.web.Serve()
 
 	select {}
-	return
 }

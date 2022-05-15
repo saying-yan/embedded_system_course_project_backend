@@ -1,12 +1,17 @@
 package connector
 
-import "encoding/binary"
+import (
+	"encoding/binary"
+)
 
 type CmdType uint16
 
 const (
 	CmdTypeUnknown CmdType = iota
 	CmdTypeHeartbeat
+	CmdTypeDeviceInfo
+	CmdTypeSongsInfo
+	CmdTypeExit
 )
 
 const (
@@ -45,6 +50,17 @@ func (p *Packet) ParseHeader(header []byte) error {
 		return ErrPacketCommand
 	}
 	return nil
+}
+
+func (p *Packet) Bytes() []byte {
+	buf := make([]byte, PacketHeaderSize, PacketHeaderSize+p.header.size)
+	binary.BigEndian.PutUint16(buf, p.header.version)
+	binary.BigEndian.PutUint16(buf[2:], uint16(p.header.cmd))
+	binary.BigEndian.PutUint32(buf[4:], p.header.size)
+	if len(p.payload) > 0 {
+		buf = append(buf, p.payload...)
+	}
+	return buf
 }
 
 func NewEmptyPacket() *Packet {

@@ -11,10 +11,14 @@ import (
 
 var Logger *logrus.Logger
 
-func InitLogger(config config.LoggerConf) error {
+func InitLoggerWithConf(config config.LoggerConf) error {
+	return InitLogger(config.Level, config.Path, config.Stdout)
+}
+
+func InitLogger(level, path string, stdout bool) error {
 	Logger = logrus.New()
 	Logger.SetFormatter(&logrus.TextFormatter{})
-	switch config.Level {
+	switch level {
 	case "debug":
 		Logger.SetLevel(logrus.DebugLevel)
 	case "error":
@@ -29,8 +33,8 @@ func InitLogger(config config.LoggerConf) error {
 
 	var writer io.Writer
 	fileWriter, err := rotatelogs.New(
-		config.Path+".%Y%m%d%H%M",
-		rotatelogs.WithLinkName(config.Path),
+		path+".%Y%m%d%H%M",
+		rotatelogs.WithLinkName(path),
 		rotatelogs.WithMaxAge(time.Duration(180)*time.Second),
 		rotatelogs.WithRotationTime(time.Duration(60)*time.Second),
 	)
@@ -38,7 +42,7 @@ func InitLogger(config config.LoggerConf) error {
 		return err
 	}
 
-	if config.Stdout {
+	if stdout {
 		writer = io.MultiWriter(os.Stdout, fileWriter)
 	} else {
 		writer = fileWriter
