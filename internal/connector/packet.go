@@ -2,6 +2,7 @@ package connector
 
 import (
 	"encoding/binary"
+	"fmt"
 )
 
 type CmdType uint16
@@ -12,7 +13,22 @@ const (
 	CmdTypeDeviceInfo
 	CmdTypeSongsInfo
 	CmdTypeExit
+
+	CmdTypeChangeSong CmdType = iota + 1000
 )
+
+func (c CmdType) String() string {
+	switch c {
+	case CmdTypeHeartbeat:
+		return "CmdTypeHeartbeat"
+	case CmdTypeDeviceInfo:
+		return "CmdTypeDeviceInfo"
+	case CmdTypeSongsInfo:
+		return "CmdTypeSongsInfo"
+	default:
+		return "CmdTypeUnknown"
+	}
+}
 
 const (
 	PacketHeaderSize = (16 + 16 + 32) / 8
@@ -31,6 +47,10 @@ type Header struct {
 type Packet struct {
 	header  *Header
 	payload []byte
+}
+
+func (p *Packet) String() string {
+	return fmt.Sprintf("%s packet with paylaod: %v", p.header.cmd.String(), p.payload)
 }
 
 func (p *Packet) ParseHeader(header []byte) error {
@@ -65,7 +85,9 @@ func (p *Packet) Bytes() []byte {
 
 func NewEmptyPacket() *Packet {
 	return &Packet{
-		header:  &Header{},
+		header: &Header{
+			version: PacketVersion,
+		},
 		payload: nil,
 	}
 }
@@ -75,4 +97,15 @@ func NewPacket(header *Header, payload []byte) *Packet {
 		header:  header,
 		payload: payload,
 	}
+}
+
+func (p *Packet) WithCmd(cmd CmdType) *Packet {
+	p.header.cmd = cmd
+	return p
+}
+
+func (p *Packet) WithPayload(payload []byte) *Packet {
+	p.header.size = uint32(len(payload))
+	p.payload = payload
+	return p
 }

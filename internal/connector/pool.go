@@ -10,6 +10,8 @@ const (
 	TimeoutDuration = 5 * time.Second
 )
 
+var connPool = newConnPool()
+
 type ConnPool struct {
 	connMap map[uint64]*Conn
 	rwMutex sync.RWMutex
@@ -21,11 +23,11 @@ func newConnPool() *ConnPool {
 	}
 }
 
-func (pool *ConnPool) GetConn(connID uint64) *Conn {
+func (pool *ConnPool) GetConn(deviceID uint64) *Conn {
 	pool.rwMutex.RLock()
 	defer pool.rwMutex.RUnlock()
 
-	if conn, ok := pool.connMap[connID]; ok {
+	if conn, ok := pool.connMap[deviceID]; ok {
 		return conn
 	}
 	return nil
@@ -35,7 +37,7 @@ func (pool *ConnPool) PutConn(conn *Conn) {
 	pool.rwMutex.Lock()
 	defer pool.rwMutex.Unlock()
 
-	pool.connMap[conn.ID] = conn
+	pool.connMap[conn.getDeviceID()] = conn
 	return
 }
 
@@ -51,10 +53,19 @@ func (pool *ConnPool) removeTimeoutConn() {
 	defer pool.rwMutex.Unlock()
 
 	for id, conn := range pool.connMap {
-		if time.Now().Sub(conn.activeTime) > TimeoutDuration {
-			Logger.Debugf("connection:%d from %s timeout", conn.ID, conn.RemoteAddr)
+		if time.Now().Sub(conn.getActiveTime()) > TimeoutDuration {
+			Logger.Debugf("connection:%d from %s timeout", conn.getDeviceID(), conn.RemoteAddr)
 			conn.Close()
 			delete(pool.connMap, id)
 		}
+	}
+}
+
+func (pool *ConnPool) removeConn(deviceID uint64) {
+	pool.rwMutex.Lock()
+	defer pool.rwMutex.Unlock()
+
+	if deviceID != 0 {
+		delete(pool.connMap, deviceID)
 	}
 }

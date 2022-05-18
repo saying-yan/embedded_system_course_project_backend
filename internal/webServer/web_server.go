@@ -28,8 +28,5 @@ func NewWebServer(port int) (*WebServer, error) {
 }
 
 func (web *WebServer) Serve() {
-	go func() {
-		// debug
-		Logger.Fatal(web.r.Run(":80"))
-	}()
+	Logger.Fatal(web.r.Run(":80"))
 }

@@ -10,7 +10,6 @@ import (
 type Connector struct {
 	port     int
 	ln       net.Listener
-	connPool *ConnPool
 	exitChan chan struct{}
 }
 
@@ -18,7 +17,6 @@ func NewConnector(port int) (*Connector, error) {
 	return &Connector{
 		port:     port,
 		ln:       nil,
-		connPool: newConnPool(),
 		exitChan: make(chan struct{}),
 	}, nil
 }
@@ -58,8 +56,7 @@ func (c *Connector) Serve() error {
 		tempDelay = 0
 
 		conn := NewConn(rawConn)
-		Logger.Debugf("accept conn:%d from %s", conn.ID, conn.RemoteAddr)
-		c.connPool.PutConn(conn)
+		Logger.Debugf("accept connection from %s", conn.RemoteAddr)
 		go conn.handleConn()
 	}
 }
@@ -71,7 +68,7 @@ func (c *Connector) checkConnectionActive() {
 		case <-c.GetExitChan():
 			return
 		case <-ticker.C:
-			c.connPool.removeTimeoutConn()
+			connPool.removeTimeoutConn()
 		}
 	}
 }
