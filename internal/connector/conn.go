@@ -123,7 +123,7 @@ func (conn *Conn) handleConn() {
 			//}()
 			err := handler(conn, packet)
 			if err != nil {
-				Logger.Errorf("handle conn:%d from %s, packet:%s error", conn.getDeviceID(), conn.RemoteAddr, packet.String())
+				Logger.Errorf("handle conn:%d from %s, packet:%s error: %s", conn.getDeviceID(), conn.RemoteAddr, packet.String(), err.Error())
 			}
 			conn.setActiveTime(time.Now())
 		}()

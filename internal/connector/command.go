@@ -46,19 +46,28 @@ func SongsInfoHandler(conn *Conn, p *Packet) error {
 	size := p.header.size
 	payload := p.payload
 
-	var sum uint32 = 0
+	var index uint32 = 0
 
 	var songs []*provider.Song
-	for sum < size {
-		songID := binary.BigEndian.Uint32(payload[sum : sum+4])
-		nameLen := binary.BigEndian.Uint16(payload[sum+4 : sum+6])
-		tmp := sum + 6 + uint32(nameLen)
-		name := string(payload[sum+6 : tmp])
-		singerNameLen := binary.BigEndian.Uint16(payload[tmp : tmp+2])
-		singerName := string(payload[tmp+2 : tmp+2+uint32(singerNameLen)])
+	for index < size {
+		if index+8 > size {
+			return ErrPacketSongInfo
+		}
+		songID := binary.BigEndian.Uint32(payload[index : index+4])
+		nameLen := uint32(binary.BigEndian.Uint16(payload[index+4 : index+6]))
+		singerNameLen := uint32(binary.BigEndian.Uint16(payload[index+6 : index+8]))
+		tmp := index + 8
+		if tmp+nameLen+singerNameLen > size {
+			return ErrPacketSongInfo
+		}
+
+		name := string(payload[tmp : tmp+nameLen])
+		singerName := string(payload[tmp+nameLen : tmp+nameLen+singerNameLen])
+
 		songInfo := provider.NewSong(songID, name, singerName)
+		Logger.Debugf("get song info: %#v", songInfo)
 		songs = append(songs, songInfo)
-		sum = tmp + 2 + uint32(singerNameLen)
+		index = tmp + nameLen + singerNameLen
 	}
 	return provider.Provider.AddSongs(conn.getDeviceID(), songs)
 }

@@ -8,4 +8,5 @@ var (
 	ErrPacketVersion       = errors.New("packet version invalid")
 
 	ErrPacketDeviceInfo = errors.New("packet device info error")
+	ErrPacketSongInfo   = errors.New("packet song info error")
 )

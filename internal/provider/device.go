@@ -2,9 +2,8 @@ package provider
 
 // DeviceInfo 嵌入式设备信息
 type DeviceInfo struct {
-	ID    uint64
-	Addr  string
-	Songs map[uint32]*Song
+	ID   uint64
+	Addr string
 }
 
 // Song 歌曲信息
@@ -25,17 +24,16 @@ func NewSong(id uint32, name, singerName string) *Song {
 
 func NewDeviceInfo(id uint64, addr string) *DeviceInfo {
 	return &DeviceInfo{
-		ID:    id,
-		Addr:  addr,
-		Songs: make(map[uint32]*Song),
+		ID:   id,
+		Addr: addr,
 	}
 }
 
-func (d *DeviceInfo) AddSong(song *Song) error {
-	_, exists := d.Songs[song.SongID]
-	if exists {
-		return ErrSongIDAlreadyExists
-	}
-	d.Songs[song.SongID] = song
-	return nil
-}
+//func (d *DeviceInfo) addSongWithoutLock(song *Song) error {
+//	_, exists := d.Songs[song.SongID]
+//	if exists {
+//		return ErrSongIDAlreadyExists
+//	}
+//	d.Songs[song.SongID] = song
+//	return nil
+//}

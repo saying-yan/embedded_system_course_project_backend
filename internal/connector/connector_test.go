@@ -3,6 +3,7 @@ package connector
 import (
 	"encoding/binary"
 	. "github.com/saying-yan/embedded_system_course_project_backend/internal/logger"
+	"github.com/saying-yan/embedded_system_course_project_backend/internal/provider"
 	"net"
 	"testing"
 	"time"
@@ -44,11 +45,7 @@ func TestConnector(t *testing.T) {
 	_, err = conn.Write(buf)
 	time.Sleep(300 * time.Millisecond)
 
-	packet = NewPacket(&Header{
-		version: PacketVersion,
-		cmd:     CmdTypeHeartbeat,
-		size:    0,
-	}, nil)
+	packet = NewEmptyPacket().WithCmd(CmdTypeHeartbeat)
 	buf = packet.Bytes()
 
 	_, err = conn.Write(buf)
@@ -61,16 +58,23 @@ func TestConnector(t *testing.T) {
 	buf = packet.Bytes()
 	_, err = conn.Write(buf)
 
-	packet = NewEmptyPacket().WithCmd(CmdTypeExit)
+	//packet = NewEmptyPacket().WithCmd(CmdTypeExit)
+	//buf = packet.Bytes()
+	//_, err = conn.Write(buf)
+
+	packet = NewEmptyPacket().WithCmd(CmdTypeSongsInfo)
+	songInfo := []byte("\x00\x00\x00\x01\x00\x04\x00\x06namesinger\x00\x00\x00\x02\x00\x05\x00\x07name2singer2")
+	packet = packet.WithPayload(songInfo)
 	buf = packet.Bytes()
 	_, err = conn.Write(buf)
 
-	if err != nil {
-		t.Fatalf("write tcp error: %s", err.Error())
-	}
-
-	time.Sleep(8 * time.Second)
+	time.Sleep(1 * time.Second)
 	for _, serverConn := range connPool.connMap {
 		Logger.Debugf("server connection: %s", serverConn.String())
+	}
+	for _, device := range provider.Provider.Devices {
+		for _, song := range device.Songs {
+			Logger.Debugf("song: %#v", song)
+		}
 	}
 }

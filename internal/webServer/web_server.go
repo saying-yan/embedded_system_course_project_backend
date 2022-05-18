@@ -13,13 +13,12 @@ type WebServer struct {
 func NewWebServer(port int) (*WebServer, error) {
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.New()
-	r.Use(LoggerMiddleware(), gin.Recovery())
 
-	r.GET("/test", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "test",
-		})
-	})
+	v1 := r.Group("/v1/:deviceID")
+	v1.Use(gin.Recovery(), LoggerMiddleware(), DeviceIDMiddleware())
+	{
+		v1.GET("/test", TestHandler)
+	}
 
 	return &WebServer{
 		r:    r,
