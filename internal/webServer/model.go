@@ -13,17 +13,38 @@ const (
 	ListTypeOrdered
 )
 
+type BaseResponse struct {
+	Code int    `json:"code"`
+	Msg  string `json:"msg"`
+}
+
+func NewBaseResponse() *BaseResponse {
+	return &BaseResponse{}
+}
+
+func (resp *BaseResponse) WithCodeOK() *BaseResponse {
+	resp.Code = 200
+	resp.Msg = "Success"
+	return resp
+}
+
+func (resp *BaseResponse) WithError(err error) *BaseResponse {
+	resp.Code = 500
+	resp.Msg = err.Error()
+	return resp
+}
+
 type SongListRequest struct {
 	ListType ListType `json:"list_type"`
 }
 
 type SongListResponse struct {
-	Code int `json:"code"`
+	BaseResponse
 	Data struct {
 		Songs []*Song `json:"songs"`
 	} `json:"data"`
 }
 
 type OrderSongRequest struct {
-	SongID int32 `json:"song_id"`
+	SongID uint32 `json:"song_id"`
 }

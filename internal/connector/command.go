@@ -37,7 +37,7 @@ func DeviceInfoHandler(conn *Conn, p *Packet) error {
 	conn.setDeviceID(deviceID)
 
 	deviceInfo := provider.NewDeviceInfo(deviceID, conn.RemoteAddr)
-	provider.Provider.SetDeviceInfo(deviceInfo)
+	provider.SetDeviceInfo(deviceInfo)
 
 	return nil
 }
@@ -69,7 +69,7 @@ func SongsInfoHandler(conn *Conn, p *Packet) error {
 		songs = append(songs, songInfo)
 		index = tmp + nameLen + singerNameLen
 	}
-	return provider.Provider.AddSongs(conn.getDeviceID(), songs)
+	return provider.GetDeviceProvider(conn.getDeviceID()).AddSongs(songs)
 }
 
 func ExitHandler(conn *Conn, p *Packet) error {

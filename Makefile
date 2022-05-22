@@ -3,7 +3,7 @@ PROJECT_NAME := backend
 BASE_DIR := $(shell pwd)
 BIN_DIR := $(BASE_DIR)/bin
 
-TARGET_FILE := ./cmd/main.go
+TARGET_FILE := ./main.go
 
 run-dev: build
 	@echo "run $(BIN_DIR)/$(PROJECT_NAME)"

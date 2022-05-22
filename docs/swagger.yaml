@@ -1,0 +1,96 @@
+definitions:
+  web_server.BaseResponse:
+    properties:
+      code:
+        type: integer
+      msg:
+        type: string
+    type: object
+  web_server.OrderSongRequest:
+    properties:
+      song_id:
+        type: integer
+    type: object
+  web_server.Song:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      singer_name:
+        type: string
+    type: object
+  web_server.SongListRequest:
+    properties:
+      list_type:
+        type: integer
+    type: object
+  web_server.SongListResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        properties:
+          songs:
+            items:
+              $ref: '#/definitions/web_server.Song'
+            type: array
+        type: object
+      msg:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /:deviceID/getList:
+    post:
+      consumes:
+      - application/json
+      description: 获取歌曲列表，0表示全部歌曲的列表，1表示已点歌曲的列表
+      parameters:
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/web_server.SongListRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/web_server.SongListResponse'
+      summary: 获取歌曲列表
+  /:deviceID/orderSong:
+    post:
+      consumes:
+      - application/json
+      description: 点歌
+      parameters:
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/web_server.OrderSongRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/web_server.BaseResponse'
+      summary: 点歌
+  /:deviceID/test:
+    get:
+      consumes:
+      - application/json
+      description: 测试
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: 测试
+      tags:
+      - test
+swagger: "2.0"

@@ -22,68 +22,75 @@ type DeviceProvider struct {
 	rwLock      sync.RWMutex
 }
 
-func (p *MemoryProvider) SetDeviceInfo(d *DeviceInfo) {
+func GetDeviceProvider(deviceID uint32) *DeviceProvider {
+	return Provider.Devices[deviceID]
+}
+
+func SetDeviceInfo(d *DeviceInfo) {
 	// should set only once, no need to lock
-	device, ok := p.Devices[d.ID]
+	device, ok := Provider.Devices[d.ID]
 	if !ok {
-		p.Devices[d.ID] = &DeviceProvider{
+		Provider.Devices[d.ID] = &DeviceProvider{
 			DeviceInfo:  d,
 			Songs:       make(map[uint32]*Song),
 			TotalList:   nil,
 			OrderedList: nil,
 		}
-		device = p.Devices[d.ID]
+		device = Provider.Devices[d.ID]
 	}
 	device.DeviceInfo = d
 }
 
-func (p *MemoryProvider) AddSongs(deviceID uint32, songs []*Song) error {
-	device, ok := p.Devices[deviceID]
-	if !ok {
-		return ErrDeviceNotExists
-	}
-
-	device.rwLock.Lock()
-	defer device.rwLock.Unlock()
+func (p *DeviceProvider) AddSongs(songs []*Song) error {
+	p.rwLock.Lock()
+	defer p.rwLock.Unlock()
 
 	for _, s := range songs {
-		_, ok = device.Songs[s.SongID]
+		_, ok := p.Songs[s.SongID]
 		if ok {
 			// already exists, only update song info
-			device.Songs[s.SongID] = s
+			p.Songs[s.SongID] = s
 			continue
 		}
 
-		device.Songs[s.SongID] = s
-		device.TotalList = append(device.TotalList, s.SongID)
+		p.Songs[s.SongID] = s
+		p.TotalList = append(p.TotalList, s.SongID)
 	}
 	return nil
 }
 
-func (p *MemoryProvider) GetList(deviceID uint32, listType int) ([]*Song, error) {
-	device, ok := p.Devices[deviceID]
-	if !ok {
-		return nil, ErrDeviceNotExists
-	}
-	device.rwLock.RLock()
-	defer device.rwLock.RUnlock()
+func (p *DeviceProvider) GetList(listType int) ([]*Song, error) {
+	p.rwLock.RLock()
+	defer p.rwLock.RUnlock()
 
 	var songs []*Song
 	switch listType {
 	case TotalList:
-		songs = make([]*Song, 0, len(device.TotalList))
-		for _, id := range device.TotalList {
-			songs = append(songs, device.Songs[id])
+		songs = make([]*Song, 0, len(p.TotalList))
+		for _, id := range p.TotalList {
+			songs = append(songs, p.Songs[id])
 		}
 	case OrderedList:
-		songs = make([]*Song, 0, len(device.OrderedList))
-		for _, id := range device.OrderedList {
-			songs = append(songs, device.Songs[id])
+		songs = make([]*Song, 0, len(p.OrderedList))
+		for _, id := range p.OrderedList {
+			songs = append(songs, p.Songs[id])
 		}
 	default:
 		return nil, ErrUnknownListType
 	}
 	return songs, nil
+}
+
+func (p *DeviceProvider) OrderSong(songID uint32) error {
+	p.rwLock.RLock()
+	defer p.rwLock.RUnlock()
+
+	if _, ok := p.Songs[songID]; !ok {
+		return ErrSongNotExists
+	}
+
+	p.OrderedList = append(p.OrderedList, songID)
+	return nil
 }
 
 func newMemoryProvider() *MemoryProvider {
