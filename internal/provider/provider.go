@@ -5,8 +5,13 @@ import "sync"
 var Provider = newMemoryProvider()
 
 type MemoryProvider struct {
-	Devices map[uint64]*DeviceProvider
+	Devices map[uint32]*DeviceProvider
 }
+
+const (
+	TotalList = iota
+	OrderedList
+)
 
 // DeviceProvider 为了简化实现，直接将数据存入内存
 type DeviceProvider struct {
@@ -32,7 +37,7 @@ func (p *MemoryProvider) SetDeviceInfo(d *DeviceInfo) {
 	device.DeviceInfo = d
 }
 
-func (p *MemoryProvider) AddSongs(deviceID uint64, songs []*Song) error {
+func (p *MemoryProvider) AddSongs(deviceID uint32, songs []*Song) error {
 	device, ok := p.Devices[deviceID]
 	if !ok {
 		return ErrDeviceNotExists
@@ -55,7 +60,7 @@ func (p *MemoryProvider) AddSongs(deviceID uint64, songs []*Song) error {
 	return nil
 }
 
-func (p *MemoryProvider) GetTotalList(deviceID uint64) ([]*Song, error) {
+func (p *MemoryProvider) GetList(deviceID uint32, listType int) ([]*Song, error) {
 	device, ok := p.Devices[deviceID]
 	if !ok {
 		return nil, ErrDeviceNotExists
@@ -63,13 +68,24 @@ func (p *MemoryProvider) GetTotalList(deviceID uint64) ([]*Song, error) {
 	device.rwLock.RLock()
 	defer device.rwLock.RUnlock()
 
-	songs := make([]*Song, 0, len(device.TotalList))
-	for _, id := range device.TotalList {
-		songs = append(songs, device.Songs[id])
+	var songs []*Song
+	switch listType {
+	case TotalList:
+		songs = make([]*Song, 0, len(device.TotalList))
+		for _, id := range device.TotalList {
+			songs = append(songs, device.Songs[id])
+		}
+	case OrderedList:
+		songs = make([]*Song, 0, len(device.OrderedList))
+		for _, id := range device.OrderedList {
+			songs = append(songs, device.Songs[id])
+		}
+	default:
+		return nil, ErrUnknownListType
 	}
 	return songs, nil
 }
 
 func newMemoryProvider() *MemoryProvider {
-	return &MemoryProvider{Devices: make(map[uint64]*DeviceProvider)}
+	return &MemoryProvider{Devices: make(map[uint32]*DeviceProvider)}
 }

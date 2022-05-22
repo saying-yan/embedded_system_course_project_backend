@@ -2,7 +2,7 @@ package provider
 
 // DeviceInfo 嵌入式设备信息
 type DeviceInfo struct {
-	ID   uint64
+	ID   uint32
 	Addr string
 }
 
@@ -22,7 +22,7 @@ func NewSong(id uint32, name, singerName string) *Song {
 	}
 }
 
-func NewDeviceInfo(id uint64, addr string) *DeviceInfo {
+func NewDeviceInfo(id uint32, addr string) *DeviceInfo {
 	return &DeviceInfo{
 		ID:   id,
 		Addr: addr,

@@ -18,6 +18,7 @@ func NewWebServer(port int) (*WebServer, error) {
 	v1.Use(gin.Recovery(), LoggerMiddleware(), DeviceIDMiddleware())
 	{
 		v1.GET("/test", TestHandler)
+		v1.GET("/getList", GetList)
 	}
 
 	return &WebServer{

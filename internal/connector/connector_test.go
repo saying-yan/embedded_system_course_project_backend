@@ -34,7 +34,7 @@ func TestConnector(t *testing.T) {
 	}
 
 	deviceID := make([]byte, 8)
-	binary.BigEndian.PutUint64(deviceID, 1000)
+	binary.BigEndian.PutUint32(deviceID, 1000)
 	packet := NewPacket(&Header{
 		version: PacketVersion,
 		cmd:     CmdTypeDeviceInfo,
@@ -63,7 +63,7 @@ func TestConnector(t *testing.T) {
 	//_, err = conn.Write(buf)
 
 	packet = NewEmptyPacket().WithCmd(CmdTypeSongsInfo)
-	songInfo := []byte("\x00\x00\x00\x01\x00\x04\x00\x06namesinger\x00\x00\x00\x02\x00\x05\x00\x07name2singer2")
+	songInfo := []byte("\x00\x01\x00\x04\x00\x06namesinger\x00\x00\x00\x02\x00\x05\x00\x07name2singer2")
 	packet = packet.WithPayload(songInfo)
 	buf = packet.Bytes()
 	_, err = conn.Write(buf)

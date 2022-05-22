@@ -33,7 +33,7 @@ func DeviceInfoHandler(conn *Conn, p *Packet) error {
 		return ErrPacketDeviceInfo
 	}
 
-	deviceID := binary.BigEndian.Uint64(payload)
+	deviceID := binary.BigEndian.Uint32(payload)
 	conn.setDeviceID(deviceID)
 
 	deviceInfo := provider.NewDeviceInfo(deviceID, conn.RemoteAddr)

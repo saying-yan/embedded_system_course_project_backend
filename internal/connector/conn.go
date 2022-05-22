@@ -48,8 +48,8 @@ func (conn *Conn) setActiveTime(t time.Time) {
 	conn.activeTime.Store(t)
 }
 
-func (conn *Conn) setDeviceID(deviceID uint64) {
-	_, ok := conn.DeviceID.Load().(uint64)
+func (conn *Conn) setDeviceID(deviceID uint32) {
+	_, ok := conn.DeviceID.Load().(uint32)
 	if ok {
 		Logger.Errorf("already set deviceID")
 		panic("already set deviceID")
@@ -60,8 +60,8 @@ func (conn *Conn) setDeviceID(deviceID uint64) {
 	connPool.PutConn(conn)
 }
 
-func (conn *Conn) getDeviceID() uint64 {
-	id, ok := conn.DeviceID.Load().(uint64)
+func (conn *Conn) getDeviceID() uint32 {
+	id, ok := conn.DeviceID.Load().(uint32)
 	if !ok {
 		// impossible
 		Logger.Errorf("get DeviceID error")

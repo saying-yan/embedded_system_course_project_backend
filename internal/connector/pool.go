@@ -13,17 +13,17 @@ const (
 var connPool = newConnPool()
 
 type ConnPool struct {
-	connMap map[uint64]*Conn
+	connMap map[uint32]*Conn
 	rwMutex sync.RWMutex
 }
 
 func newConnPool() *ConnPool {
 	return &ConnPool{
-		connMap: make(map[uint64]*Conn),
+		connMap: make(map[uint32]*Conn),
 	}
 }
 
-func (pool *ConnPool) GetConn(deviceID uint64) *Conn {
+func (pool *ConnPool) GetConn(deviceID uint32) *Conn {
 	pool.rwMutex.RLock()
 	defer pool.rwMutex.RUnlock()
 
@@ -61,7 +61,7 @@ func (pool *ConnPool) removeTimeoutConn() {
 	}
 }
 
-func (pool *ConnPool) removeConn(deviceID uint64) {
+func (pool *ConnPool) removeConn(deviceID uint32) {
 	pool.rwMutex.Lock()
 	defer pool.rwMutex.Unlock()
 

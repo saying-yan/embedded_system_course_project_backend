@@ -19,14 +19,33 @@ func TestHandler(c *gin.Context) {
 
 }
 
-func GetTotalList(c *gin.Context) {
+func GetList(c *gin.Context) {
 	id, _ := c.Get("deviceID")
-	deviceID := id.(uint64)
-	songs, err := provider.Provider.GetTotalList(deviceID)
+	deviceID := id.(uint32)
+	req := SongListRequest{}
+	c.BindJSON(&req)
+
+	var songs []*provider.Song
+	var err error
+	switch req.ListType {
+	case ListTypeTotal:
+		songs, err = provider.Provider.GetList(deviceID, provider.TotalList)
+	case ListTypeOrdered:
+		songs, err = provider.Provider.GetList(deviceID, provider.OrderedList)
+	default:
+		c.JSON(http.StatusOK, gin.H{
+			"code":    500,
+			"message": "unknown list type",
+		})
+		return
+	}
+
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
+			"code":    500,
 			"message": err.Error(),
 		})
+		return
 	}
 
 	var songsModel []*Song
