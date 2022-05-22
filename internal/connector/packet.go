@@ -13,8 +13,9 @@ const (
 	CmdTypeDeviceInfo
 	CmdTypeSongsInfo
 	CmdTypeExit
+	CmdTypeMusicCompleted
 
-	CmdTypeChangeSong CmdType = iota + 1000
+	CmdTypePlayMusic CmdType = iota + 1000
 )
 
 func (c CmdType) String() string {

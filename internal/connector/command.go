@@ -9,11 +9,12 @@ import (
 type commandHandler func(conn *Conn, packet *Packet) error
 
 var commandHandlerMap = map[CmdType]commandHandler{
-	CmdTypeUnknown:    UnknownHandler,
-	CmdTypeHeartbeat:  HeartbeatHandler,
-	CmdTypeDeviceInfo: DeviceInfoHandler,
-	CmdTypeSongsInfo:  SongsInfoHandler,
-	CmdTypeExit:       ExitHandler,
+	CmdTypeUnknown:        UnknownHandler,
+	CmdTypeHeartbeat:      HeartbeatHandler,
+	CmdTypeDeviceInfo:     DeviceInfoHandler,
+	CmdTypeSongsInfo:      SongsInfoHandler,
+	CmdTypeExit:           ExitHandler,
+	CmdTypeMusicCompleted: MusicCompletedHandler,
 }
 
 func UnknownHandler(_ *Conn, _ *Packet) error {
@@ -70,6 +71,14 @@ func SongsInfoHandler(conn *Conn, p *Packet) error {
 		index = tmp + nameLen + singerNameLen
 	}
 	return provider.GetDeviceProvider(conn.getDeviceID()).AddSongs(songs)
+}
+
+func MusicCompletedHandler(conn *Conn, _ *Packet) error {
+	nextSongID := provider.GetDeviceProvider(conn.getDeviceID()).GetNextSingID()
+	if nextSongID == 0 {
+		return nil
+	}
+	return conn.PlayMusic(nextSongID)
 }
 
 func ExitHandler(conn *Conn, p *Packet) error {

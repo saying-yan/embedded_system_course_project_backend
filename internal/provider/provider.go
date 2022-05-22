@@ -17,8 +17,8 @@ const (
 type DeviceProvider struct {
 	DeviceInfo  *DeviceInfo
 	Songs       map[uint32]*Song
-	TotalList   []uint32
-	OrderedList []uint32
+	totalList   []uint32
+	orderedList []uint32
 	rwLock      sync.RWMutex
 }
 
@@ -33,8 +33,8 @@ func SetDeviceInfo(d *DeviceInfo) {
 		Provider.Devices[d.ID] = &DeviceProvider{
 			DeviceInfo:  d,
 			Songs:       make(map[uint32]*Song),
-			TotalList:   nil,
-			OrderedList: nil,
+			totalList:   nil,
+			orderedList: nil,
 		}
 		device = Provider.Devices[d.ID]
 	}
@@ -54,9 +54,26 @@ func (p *DeviceProvider) AddSongs(songs []*Song) error {
 		}
 
 		p.Songs[s.SongID] = s
-		p.TotalList = append(p.TotalList, s.SongID)
+		p.totalList = append(p.totalList, s.SongID)
 	}
 	return nil
+}
+
+func (p *DeviceProvider) GetNextSingID() uint32 {
+	p.rwLock.Lock()
+	defer p.rwLock.Unlock()
+
+	if len(p.orderedList) == 0 {
+		return 0
+	} else if len(p.orderedList) == 1 {
+		songID := p.orderedList[0]
+		p.orderedList = nil
+		return songID
+	} else {
+		songID := p.orderedList[0]
+		p.orderedList = p.orderedList[1:]
+		return songID
+	}
 }
 
 func (p *DeviceProvider) GetList(listType int) ([]*Song, error) {
@@ -66,13 +83,13 @@ func (p *DeviceProvider) GetList(listType int) ([]*Song, error) {
 	var songs []*Song
 	switch listType {
 	case TotalList:
-		songs = make([]*Song, 0, len(p.TotalList))
-		for _, id := range p.TotalList {
+		songs = make([]*Song, 0, len(p.totalList))
+		for _, id := range p.totalList {
 			songs = append(songs, p.Songs[id])
 		}
 	case OrderedList:
-		songs = make([]*Song, 0, len(p.OrderedList))
-		for _, id := range p.OrderedList {
+		songs = make([]*Song, 0, len(p.orderedList))
+		for _, id := range p.orderedList {
 			songs = append(songs, p.Songs[id])
 		}
 	default:
@@ -82,14 +99,14 @@ func (p *DeviceProvider) GetList(listType int) ([]*Song, error) {
 }
 
 func (p *DeviceProvider) OrderSong(songID uint32) error {
-	p.rwLock.RLock()
-	defer p.rwLock.RUnlock()
+	p.rwLock.Lock()
+	defer p.rwLock.Unlock()
 
 	if _, ok := p.Songs[songID]; !ok {
 		return ErrSongNotExists
 	}
 
-	p.OrderedList = append(p.OrderedList, songID)
+	p.orderedList = append(p.orderedList, songID)
 	return nil
 }
 

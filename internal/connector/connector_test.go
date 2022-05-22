@@ -33,7 +33,7 @@ func TestConnector(t *testing.T) {
 		t.Fatalf("dial tcp error: %s", err.Error())
 	}
 
-	deviceID := make([]byte, 8)
+	deviceID := make([]byte, 4)
 	binary.BigEndian.PutUint32(deviceID, 1000)
 	packet := NewPacket(&Header{
 		version: PacketVersion,

@@ -1,6 +1,7 @@
 package connector
 
 import (
+	"encoding/binary"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -128,6 +129,19 @@ func (conn *Conn) handleConn() {
 			conn.setActiveTime(time.Now())
 		}()
 	}
+}
+
+func (conn *Conn) PlayMusic(songID uint32) error {
+	payload := make([]byte, 4)
+	binary.BigEndian.PutUint32(payload, songID)
+	packet := NewEmptyPacket().WithCmd(CmdTypePlayMusic).WithPayload(payload)
+
+	buf := packet.Bytes()
+	_, err := conn.netConn.Write(buf)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (conn *Conn) Close() {
