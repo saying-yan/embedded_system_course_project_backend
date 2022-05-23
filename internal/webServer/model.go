@@ -48,3 +48,8 @@ type SongListResponse struct {
 type OrderSongRequest struct {
 	SongID uint32 `json:"song_id"`
 }
+
+// StickTopRequest 置顶请求
+type StickTopRequest struct {
+	SongIndex int `json:"song_index"`
+}

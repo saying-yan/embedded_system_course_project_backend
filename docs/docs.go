@@ -72,6 +72,34 @@ const docTemplate = `{
                 }
             }
         },
+        "/:deviceID/stickTopSong": {
+            "post": {
+                "description": "置顶已点歌曲",
+                "consumes": [
+                    "application/json"
+                ],
+                "summary": "置顶",
+                "parameters": [
+                    {
+                        "description": "参数",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/web_server.StickTopRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/web_server.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/:deviceID/test": {
             "get": {
                 "description": "测试",
@@ -157,6 +185,14 @@ const docTemplate = `{
                 },
                 "msg": {
                     "type": "string"
+                }
+            }
+        },
+        "web_server.StickTopRequest": {
+            "type": "object",
+            "properties": {
+                "song_index": {
+                    "type": "integer"
                 }
             }
         }

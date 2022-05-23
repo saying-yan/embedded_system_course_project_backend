@@ -25,6 +25,7 @@ func NewWebServer(port int) (*WebServer, error) {
 		v1.GET("/test", TestHandler)
 		v1.POST("/getList", GetList)
 		v1.POST("/orderSong", OrderSong)
+		v1.POST("/stickTopSong", StickTopSong)
 	}
 
 	return &WebServer{

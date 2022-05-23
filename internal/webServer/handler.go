@@ -96,3 +96,27 @@ func OrderSong(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, resp)
 }
+
+// StickTopSong
+// @Summary 置顶
+// @Schemes
+// @Description 置顶已点歌曲
+// @Router /:deviceID/stickTopSong [POST]
+// @Accept json
+// @Param data body StickTopRequest true "参数"
+// @Success 200 {object} BaseResponse
+func StickTopSong(c *gin.Context) {
+	id, _ := c.Get("deviceID")
+	deviceID := id.(uint32)
+	req := StickTopRequest{}
+	c.BindJSON(&req)
+
+	err := provider.GetDeviceProvider(deviceID).StickTopSong(req.SongIndex)
+	resp := NewBaseResponse()
+	if err != nil {
+		resp.WithError(err)
+	} else {
+		resp.WithCodeOK()
+	}
+	c.JSON(http.StatusOK, resp)
+}

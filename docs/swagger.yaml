@@ -39,6 +39,11 @@ definitions:
       msg:
         type: string
     type: object
+  web_server.StickTopRequest:
+    properties:
+      song_index:
+        type: integer
+    type: object
 info:
   contact: {}
 paths:
@@ -78,6 +83,24 @@ paths:
           schema:
             $ref: '#/definitions/web_server.BaseResponse'
       summary: 点歌
+  /:deviceID/stickTopSong:
+    post:
+      consumes:
+      - application/json
+      description: 置顶已点歌曲
+      parameters:
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/web_server.StickTopRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/web_server.BaseResponse'
+      summary: 置顶
   /:deviceID/test:
     get:
       consumes:

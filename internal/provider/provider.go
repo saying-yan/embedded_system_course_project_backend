@@ -110,6 +110,25 @@ func (p *DeviceProvider) OrderSong(songID uint32) error {
 	return nil
 }
 
+func (p *DeviceProvider) StickTopSong(songIndex int) error {
+	p.rwLock.Lock()
+	defer p.rwLock.Unlock()
+
+	if songIndex >= len(p.orderedList) {
+		return ErrSongNotExists
+	}
+	if songIndex == 0 {
+		return nil
+	}
+
+	temp := p.orderedList[songIndex]
+	for i := songIndex; i > 0; i-- {
+		p.orderedList[songIndex] = p.orderedList[songIndex-1]
+	}
+	p.orderedList[0] = temp
+	return nil
+}
+
 func newMemoryProvider() *MemoryProvider {
 	return &MemoryProvider{Devices: make(map[uint32]*DeviceProvider)}
 }
