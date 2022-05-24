@@ -10,20 +10,20 @@ const (
 	TimeoutDuration = 5 * time.Second
 )
 
-var connPool = newConnPool()
+var ConnPool = newConnPool()
 
-type ConnPool struct {
+type ConnectionPool struct {
 	connMap map[uint32]*Conn
 	rwMutex sync.RWMutex
 }
 
-func newConnPool() *ConnPool {
-	return &ConnPool{
+func newConnPool() *ConnectionPool {
+	return &ConnectionPool{
 		connMap: make(map[uint32]*Conn),
 	}
 }
 
-func (pool *ConnPool) GetConn(deviceID uint32) *Conn {
+func (pool *ConnectionPool) GetConn(deviceID uint32) *Conn {
 	pool.rwMutex.RLock()
 	defer pool.rwMutex.RUnlock()
 
@@ -33,7 +33,7 @@ func (pool *ConnPool) GetConn(deviceID uint32) *Conn {
 	return nil
 }
 
-func (pool *ConnPool) PutConn(conn *Conn) {
+func (pool *ConnectionPool) PutConn(conn *Conn) {
 	pool.rwMutex.Lock()
 	defer pool.rwMutex.Unlock()
 
@@ -41,14 +41,14 @@ func (pool *ConnPool) PutConn(conn *Conn) {
 	return
 }
 
-func (pool *ConnPool) Size() int {
+func (pool *ConnectionPool) Size() int {
 	pool.rwMutex.RLock()
 	defer pool.rwMutex.RUnlock()
 
 	return len(pool.connMap)
 }
 
-func (pool *ConnPool) removeTimeoutConn() {
+func (pool *ConnectionPool) removeTimeoutConn() {
 	pool.rwMutex.Lock()
 	defer pool.rwMutex.Unlock()
 
@@ -61,7 +61,7 @@ func (pool *ConnPool) removeTimeoutConn() {
 	}
 }
 
-func (pool *ConnPool) removeConn(deviceID uint32) {
+func (pool *ConnectionPool) removeConn(deviceID uint32) {
 	pool.rwMutex.Lock()
 	defer pool.rwMutex.Unlock()
 

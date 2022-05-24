@@ -59,7 +59,7 @@ func (p *DeviceProvider) AddSongs(songs []*Song) error {
 	return nil
 }
 
-func (p *DeviceProvider) GetNextSingID() uint32 {
+func (p *DeviceProvider) GetNextSongID() uint32 {
 	p.rwLock.Lock()
 	defer p.rwLock.Unlock()
 

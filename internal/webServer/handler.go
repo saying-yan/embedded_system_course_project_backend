@@ -2,6 +2,7 @@ package web_server
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/saying-yan/embedded_system_course_project_backend/internal/connector"
 	"github.com/saying-yan/embedded_system_course_project_backend/internal/provider"
 	"net/http"
 	"strconv"
@@ -76,7 +77,7 @@ func GetList(c *gin.Context) {
 // OrderSong
 // @Summary 点歌
 // @Schemes
-// @Description 点歌
+// @Description 点歌，将歌曲加入点歌歌单
 // @Router /:deviceID/orderSong [POST]
 // @Accept json
 // @Param data body OrderSongRequest true "参数"
@@ -112,6 +113,28 @@ func StickTopSong(c *gin.Context) {
 	c.BindJSON(&req)
 
 	err := provider.GetDeviceProvider(deviceID).StickTopSong(req.SongIndex)
+	resp := NewBaseResponse()
+	if err != nil {
+		resp.WithError(err)
+	} else {
+		resp.WithCodeOK()
+	}
+	c.JSON(http.StatusOK, resp)
+}
+
+// NextSong
+// @Summary 下一首歌
+// @Schemes
+// @Description 直接播放下一首歌
+// @Router /:deviceID/nextSong [POST]
+// @Accept json
+// @Success 200 {object} BaseResponse
+func NextSong(c *gin.Context) {
+	id, _ := c.Get("deviceID")
+	deviceID := id.(uint32)
+
+	songID := provider.GetDeviceProvider(deviceID).GetNextSongID()
+	err := connector.ConnPool.GetConn(deviceID).PlayMusic(songID)
 	resp := NewBaseResponse()
 	if err != nil {
 		resp.WithError(err)

@@ -26,6 +26,7 @@ func NewWebServer(port int) (*WebServer, error) {
 		v1.POST("/getList", GetList)
 		v1.POST("/orderSong", OrderSong)
 		v1.POST("/stickTopSong", StickTopSong)
+		v1.POST("/nextSong", NextSong)
 	}
 
 	return &WebServer{

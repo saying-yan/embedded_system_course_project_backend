@@ -74,10 +74,8 @@ func SongsInfoHandler(conn *Conn, p *Packet) error {
 }
 
 func MusicCompletedHandler(conn *Conn, _ *Packet) error {
-	nextSongID := provider.GetDeviceProvider(conn.getDeviceID()).GetNextSingID()
-	if nextSongID == 0 {
-		return nil
-	}
+	nextSongID := provider.GetDeviceProvider(conn.getDeviceID()).GetNextSongID()
+	// NOTE: 嵌入式设备需要实现，接受到songID == 0时表示停止播放
 	return conn.PlayMusic(nextSongID)
 }
 
