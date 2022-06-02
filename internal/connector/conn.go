@@ -58,7 +58,7 @@ func (conn *Conn) setDeviceID(deviceID uint32) {
 	conn.DeviceID.Store(deviceID)
 
 	// put into connPool
-	connPool.PutConn(conn)
+	ConnPool.PutConn(conn)
 }
 
 func (conn *Conn) getDeviceID() uint32 {

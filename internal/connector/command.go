@@ -80,7 +80,7 @@ func MusicCompletedHandler(conn *Conn, _ *Packet) error {
 }
 
 func ExitHandler(conn *Conn, p *Packet) error {
-	connPool.removeConn(conn.getDeviceID())
+	ConnPool.removeConn(conn.getDeviceID())
 	conn.Close()
 	return nil
 }

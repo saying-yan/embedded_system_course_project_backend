@@ -68,7 +68,7 @@ func (c *Connector) checkConnectionActive() {
 		case <-c.GetExitChan():
 			return
 		case <-ticker.C:
-			connPool.removeTimeoutConn()
+			ConnPool.removeTimeoutConn()
 		}
 	}
 }

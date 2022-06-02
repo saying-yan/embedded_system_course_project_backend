@@ -1,9 +1,9 @@
 web:
-  port: 80
+  port: 8001
   cert_file:
   key_file:
 connector:
-  port: 8888
+  port: 8002
 logger:
   path: ./log/backend
   stdout: true

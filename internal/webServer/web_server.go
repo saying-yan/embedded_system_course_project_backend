@@ -1,6 +1,7 @@
 package web_server
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	docs "github.com/saying-yan/embedded_system_course_project_backend/docs"
 	. "github.com/saying-yan/embedded_system_course_project_backend/internal/logger"
@@ -36,5 +37,6 @@ func NewWebServer(port int) (*WebServer, error) {
 }
 
 func (web *WebServer) Serve() {
-	Logger.Fatal(web.r.Run(":80"))
+	address := fmt.Sprintf(":%d", web.port)
+	Logger.Fatal(web.r.Run(address))
 }
