@@ -29,8 +29,8 @@ func DeviceInfoHandler(conn *Conn, p *Packet) error {
 	size := p.header.size
 	payload := p.payload
 
-	if size != 8 {
-		Logger.Debugf("DeviceInfo packet error: patload (size=%d) != 8", size)
+	if size != 4 {
+		Logger.Debugf("DeviceInfo packet error: payload (size=%d) != 4", size)
 		return ErrPacketDeviceInfo
 	}
 
@@ -80,7 +80,6 @@ func MusicCompletedHandler(conn *Conn, _ *Packet) error {
 }
 
 func ExitHandler(conn *Conn, p *Packet) error {
-	ConnPool.removeConn(conn.getDeviceID())
 	conn.Close()
 	return nil
 }

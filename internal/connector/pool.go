@@ -52,11 +52,10 @@ func (pool *ConnectionPool) removeTimeoutConn() {
 	pool.rwMutex.Lock()
 	defer pool.rwMutex.Unlock()
 
-	for id, conn := range pool.connMap {
+	for _, conn := range pool.connMap {
 		if time.Now().Sub(conn.getActiveTime()) > TimeoutDuration {
 			Logger.Debugf("connection:%d from %s timeout", conn.getDeviceID(), conn.RemoteAddr)
 			conn.Close()
-			delete(pool.connMap, id)
 		}
 	}
 }

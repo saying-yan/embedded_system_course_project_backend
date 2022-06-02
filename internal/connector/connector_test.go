@@ -2,6 +2,7 @@ package connector
 
 import (
 	"encoding/binary"
+	"fmt"
 	. "github.com/saying-yan/embedded_system_course_project_backend/internal/logger"
 	"github.com/saying-yan/embedded_system_course_project_backend/internal/provider"
 	"net"
@@ -15,7 +16,7 @@ func initLogger() {
 
 func TestConnector(t *testing.T) {
 	initLogger()
-	c, err := NewConnector(8888)
+	c, err := NewConnector(8002)
 	if err != nil {
 		t.Fatalf("new connector error: %s", err.Error())
 	}
@@ -28,7 +29,7 @@ func TestConnector(t *testing.T) {
 	}()
 
 	time.Sleep(1 * time.Second)
-	conn, err := net.Dial("tcp", "127.0.0.1:8888")
+	conn, err := net.Dial("tcp", ":8002")
 	if err != nil {
 		t.Fatalf("dial tcp error: %s", err.Error())
 	}
@@ -38,22 +39,24 @@ func TestConnector(t *testing.T) {
 	packet := NewPacket(&Header{
 		version: PacketVersion,
 		cmd:     CmdTypeDeviceInfo,
-		size:    8,
+		size:    4,
 	}, deviceID)
 	buf := packet.Bytes()
 
+	fmt.Println("send buff", buf)
 	_, err = conn.Write(buf)
 	time.Sleep(300 * time.Millisecond)
 
 	packet = NewEmptyPacket().WithCmd(CmdTypeHeartbeat)
 	buf = packet.Bytes()
-
+	fmt.Println("send buff", buf)
 	_, err = conn.Write(buf)
 
 	if err != nil {
 		t.Fatalf("write tcp error: %s", err.Error())
 	}
 
+	time.Sleep(2 * time.Second)
 	packet = NewEmptyPacket().WithCmd(CmdTypeHeartbeat)
 	buf = packet.Bytes()
 	_, err = conn.Write(buf)
@@ -69,7 +72,7 @@ func TestConnector(t *testing.T) {
 	_, err = conn.Write(buf)
 
 	time.Sleep(1 * time.Second)
-	for _, serverConn := range connPool.connMap {
+	for _, serverConn := range ConnPool.connMap {
 		Logger.Debugf("server connection: %s", serverConn.String())
 	}
 	for _, device := range provider.Provider.Devices {
@@ -77,4 +80,15 @@ func TestConnector(t *testing.T) {
 			Logger.Debugf("song: %#v", song)
 		}
 	}
+	//ticker := time.NewTicker(1 * time.Second)
+	//for {
+	//	select {
+	//	case <-ticker.C:
+	//		packet = NewEmptyPacket().WithCmd(CmdTypeHeartbeat)
+	//		_, err = conn.Write(packet.Bytes())
+	//		fmt.Println("heartbeat")
+	//	}
+	//}
+	conn.Close()
+	select {}
 }

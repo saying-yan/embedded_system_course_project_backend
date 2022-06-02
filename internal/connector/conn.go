@@ -111,6 +111,10 @@ func (conn *Conn) handleConn() {
 		packet, err := conn.receivePacket()
 		if err != nil {
 			Logger.Debugf("conn:%d from %s receive packet error: %s", conn.getDeviceID(), conn.RemoteAddr, err.Error())
+			if err == io.EOF {
+				conn.Close()
+				break
+			}
 			continue
 		}
 
@@ -145,9 +149,15 @@ func (conn *Conn) PlayMusic(songID uint32) error {
 }
 
 func (conn *Conn) Close() {
-	// close conn
+	// close raw conn
 	conn.netConn.Close()
-	close(conn.exitChan)
+	// close channel
+	select {
+	case <-conn.exitChan:
+	default:
+		close(conn.exitChan)
+	}
+	delete(ConnPool.connMap, conn.getDeviceID())
 	atomic.StoreInt32(&conn.exited, 1)
 }
 
