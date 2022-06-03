@@ -9,7 +9,7 @@ import (
 )
 
 type TestRes struct {
-	DeviceID uint64 `json:"device_id"`
+	DeviceID uint32 `json:"device_id"`
 }
 
 // TestHandler

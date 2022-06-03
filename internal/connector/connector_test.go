@@ -29,7 +29,7 @@ func TestConnector(t *testing.T) {
 	}()
 
 	time.Sleep(1 * time.Second)
-	conn, err := net.Dial("tcp", ":8002")
+	conn, err := net.Dial("tcp", "saying.mobi:8002")
 	if err != nil {
 		t.Fatalf("dial tcp error: %s", err.Error())
 	}
@@ -66,7 +66,7 @@ func TestConnector(t *testing.T) {
 	//_, err = conn.Write(buf)
 
 	packet = NewEmptyPacket().WithCmd(CmdTypeSongsInfo)
-	songInfo := []byte("\x00\x01\x00\x04\x00\x06namesinger\x00\x00\x00\x02\x00\x05\x00\x07name2singer2")
+	songInfo := []byte("\x00\x00\x00\x01\x00\x04\x00\x06namesinger\x00\x00\x00\x02\x00\x05\x00\x07name2singer2")
 	packet = packet.WithPayload(songInfo)
 	buf = packet.Bytes()
 	_, err = conn.Write(buf)
@@ -80,15 +80,15 @@ func TestConnector(t *testing.T) {
 			Logger.Debugf("song: %#v", song)
 		}
 	}
-	//ticker := time.NewTicker(1 * time.Second)
-	//for {
-	//	select {
-	//	case <-ticker.C:
-	//		packet = NewEmptyPacket().WithCmd(CmdTypeHeartbeat)
-	//		_, err = conn.Write(packet.Bytes())
-	//		fmt.Println("heartbeat")
-	//	}
-	//}
-	conn.Close()
+	ticker := time.NewTicker(1 * time.Second)
+	for {
+		select {
+		case <-ticker.C:
+			packet = NewEmptyPacket().WithCmd(CmdTypeHeartbeat)
+			_, err = conn.Write(packet.Bytes())
+			fmt.Println("heartbeat")
+		}
+	}
+
 	select {}
 }

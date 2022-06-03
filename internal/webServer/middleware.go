@@ -34,6 +34,6 @@ func DeviceIDMiddleware() gin.HandlerFunc {
 				"message": "device ID error",
 			})
 		}
-		c.Set("deviceID", deviceID)
+		c.Set("deviceID", uint32(deviceID))
 	}
 }

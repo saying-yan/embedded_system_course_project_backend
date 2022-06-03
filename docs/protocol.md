@@ -59,3 +59,5 @@
 
 - payload size 固定值为 4
 - payload为歌曲ID（歌曲ID为32bit无符号整数）
+
+若接受到歌曲ID为 0，停止播放歌曲
