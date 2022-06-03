@@ -3,6 +3,7 @@ package web_server
 import (
 	"github.com/gin-gonic/gin"
 	. "github.com/saying-yan/embedded_system_course_project_backend/internal/logger"
+	"github.com/saying-yan/embedded_system_course_project_backend/internal/provider"
 	"strconv"
 	"time"
 )
@@ -34,6 +35,14 @@ func DeviceIDMiddleware() gin.HandlerFunc {
 				"message": "device ID error",
 			})
 		}
+
+		device := provider.GetDeviceProvider(uint32(deviceID))
+		if device == nil {
+			c.AbortWithStatusJSON(200, gin.H{
+				"message": "device not found",
+			})
+		}
+
 		c.Set("deviceID", uint32(deviceID))
 	}
 }

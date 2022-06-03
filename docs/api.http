@@ -1,0 +1,26 @@
+### 测试
+GET http://api.ktv.saying.mobi/v1/1000/test
+
+### 获取歌曲列表
+POST http://api.ktv.saying.mobi/v1/1000/getList
+
+{
+    "list_type": 0
+}
+
+### 点歌
+POST http://api.ktv.saying.mobi/v1/1000/orderSong
+
+{
+    "song_id": 0
+}
+
+### 点歌
+POST http://api.ktv.saying.mobi/v1/1000/stickTopSong
+
+{
+    "song_index": 0
+}
+
+### 下一首歌
+POST http://api.ktv.saying.mobi/v1/1000/nextSong

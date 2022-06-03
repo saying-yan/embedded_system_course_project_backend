@@ -8,10 +8,6 @@ import (
 	"strconv"
 )
 
-type TestRes struct {
-	DeviceID uint32 `json:"device_id"`
-}
-
 // TestHandler
 // @Summary 测试
 // @Schemes

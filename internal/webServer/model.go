@@ -1,5 +1,9 @@
 package web_server
 
+type TestResponse struct {
+	DeviceID uint32 `json:"device_id"`
+}
+
 type Song struct {
 	ID         uint32 `json:"id"`
 	Name       string `json:"name"`
