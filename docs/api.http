@@ -5,21 +5,21 @@ GET http://api.ktv.saying.mobi/v1/1000/test
 POST http://api.ktv.saying.mobi/v1/1000/getList
 
 {
-    "list_type": 0
+    "list_type": 1
 }
 
 ### 点歌
 POST http://api.ktv.saying.mobi/v1/1000/orderSong
 
 {
-    "song_id": 0
+    "song_id": 2
 }
 
-### 点歌
+### 置顶
 POST http://api.ktv.saying.mobi/v1/1000/stickTopSong
 
 {
-    "song_index": 0
+    "song_index": 2
 }
 
 ### 下一首歌

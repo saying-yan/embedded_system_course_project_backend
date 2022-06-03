@@ -4,9 +4,24 @@ import (
 	"github.com/gin-gonic/gin"
 	. "github.com/saying-yan/embedded_system_course_project_backend/internal/logger"
 	"github.com/saying-yan/embedded_system_course_project_backend/internal/provider"
+	"net/http"
 	"strconv"
 	"time"
 )
+
+func CORSMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Header("Access-Control-Allow-Origin", "*")
+		c.Header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+		c.Header("Access-Control-Allow-Headers", "Content-Type,AccessToken,X-CSRF-Token, Authorization")
+		c.Header("Access-Control-Allow-Credentials", "true")
+		c.Set("content-type", "application/json")
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(http.StatusNoContent)
+		}
+		c.Next()
+	}
+}
 
 func LoggerMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
