@@ -32,7 +32,7 @@ func NewServer(configFile string) (*Server, error) {
 		return nil, err
 	}
 
-	c, err := connector.NewConnector(config.ConnectorConf.Port)
+	c, err := connector.NewConnector(config.ConnectorConf.Port, config.ConnectorConf.TimeoutDuration)
 	if err != nil {
 		fmt.Printf("new connector error: %s", err.Error())
 		return nil, err

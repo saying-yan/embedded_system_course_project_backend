@@ -4,6 +4,7 @@ web:
   key_file:
 connector:
   port: 8002
+  timeout_duration: 10
 logger:
   path: ./log/backend
   stdout: true

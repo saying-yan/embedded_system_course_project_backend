@@ -13,7 +13,8 @@ type Connector struct {
 	exitChan chan struct{}
 }
 
-func NewConnector(port int) (*Connector, error) {
+func NewConnector(port int, timeout time.Duration) (*Connector, error) {
+	ConnPool.timeoutDuration = timeout
 	return &Connector{
 		port:     port,
 		ln:       nil,

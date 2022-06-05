@@ -16,7 +16,7 @@ func initLogger() {
 
 func TestConnector(t *testing.T) {
 	initLogger()
-	c, err := NewConnector(8002)
+	c, err := NewConnector(8002, 5*time.Second)
 	if err != nil {
 		t.Fatalf("new connector error: %s", err.Error())
 	}
@@ -89,6 +89,4 @@ func TestConnector(t *testing.T) {
 			fmt.Println("heartbeat")
 		}
 	}
-
-	select {}
 }
