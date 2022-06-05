@@ -6,6 +6,7 @@ import (
 	"github.com/saying-yan/embedded_system_course_project_backend/internal/connector"
 	"github.com/saying-yan/embedded_system_course_project_backend/internal/logger"
 	web "github.com/saying-yan/embedded_system_course_project_backend/internal/webServer"
+	"time"
 )
 
 type Server struct {
@@ -32,7 +33,7 @@ func NewServer(configFile string) (*Server, error) {
 		return nil, err
 	}
 
-	c, err := connector.NewConnector(config.ConnectorConf.Port, config.ConnectorConf.TimeoutDuration)
+	c, err := connector.NewConnector(config.ConnectorConf.Port, time.Duration(config.ConnectorConf.TimeoutDuration)*time.Second)
 	if err != nil {
 		fmt.Printf("new connector error: %s", err.Error())
 		return nil, err

@@ -3,7 +3,6 @@ package config
 import (
 	"gopkg.in/yaml.v3"
 	"io/ioutil"
-	"time"
 )
 
 type WebConf struct {
@@ -13,8 +12,8 @@ type WebConf struct {
 }
 
 type ConnectorConf struct {
-	Port            int           `yaml:"port"`
-	TimeoutDuration time.Duration `yaml:"timeout_duration"`
+	Port            int `yaml:"port"`
+	TimeoutDuration int `yaml:"timeout_duration"`
 }
 
 type LoggerConf struct {
