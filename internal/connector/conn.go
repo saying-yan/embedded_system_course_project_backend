@@ -126,6 +126,10 @@ func (conn *Conn) handleConn() {
 			//		// TODO: recover
 			//	}
 			//}()
+			if handler == nil {
+				Logger.Errorf("handle conn:%d from %s, packet:%s error: unknown cmd", conn.getDeviceID(), conn.RemoteAddr, packet.String())
+				return
+			}
 			err := handler(conn, packet)
 			if err != nil {
 				Logger.Errorf("handle conn:%d from %s, packet:%s error: %s", conn.getDeviceID(), conn.RemoteAddr, packet.String(), err.Error())

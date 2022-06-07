@@ -19,9 +19,9 @@ func NewWebServer(port int) (*WebServer, error) {
 	r := gin.New()
 	docs.SwaggerInfo.BasePath = "/v1"
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
-
+	r.Use(CORSMiddleware())
 	v1 := r.Group("/v1/:deviceID")
-	v1.Use(gin.Recovery(), LoggerMiddleware(), CORSMiddleware(), DeviceIDMiddleware())
+	v1.Use(gin.Recovery(), LoggerMiddleware(), DeviceIDMiddleware())
 	{
 		v1.GET("/test", TestHandler)
 		v1.POST("/getList", GetList)
