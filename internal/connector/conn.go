@@ -3,6 +3,7 @@ package connector
 import (
 	"encoding/binary"
 	"fmt"
+	"github.com/saying-yan/embedded_system_course_project_backend/internal/provider"
 	"io"
 	"io/ioutil"
 	"net"
@@ -162,6 +163,7 @@ func (conn *Conn) Close() {
 		close(conn.exitChan)
 	}
 	delete(ConnPool.connMap, conn.getDeviceID())
+	provider.DeleteDeviceProvider(conn.getDeviceID())
 	atomic.StoreInt32(&conn.exited, 1)
 }
 

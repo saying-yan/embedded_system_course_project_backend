@@ -29,6 +29,7 @@ func TestConnector(t *testing.T) {
 	}()
 
 	time.Sleep(1 * time.Second)
+	// conn, err := net.Dial("tcp", "0.0.0.0:8002")
 	conn, err := net.Dial("tcp", "saying.mobi:8002")
 	if err != nil {
 		t.Fatalf("dial tcp error: %s", err.Error())

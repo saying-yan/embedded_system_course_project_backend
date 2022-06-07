@@ -26,6 +26,10 @@ func GetDeviceProvider(deviceID uint32) *DeviceProvider {
 	return Provider.Devices[deviceID]
 }
 
+func DeleteDeviceProvider(deviceID uint32) {
+	delete(Provider.Devices, deviceID)
+}
+
 func SetDeviceInfo(d *DeviceInfo) {
 	// should set only once, no need to lock
 	device, ok := Provider.Devices[d.ID]
