@@ -77,7 +77,6 @@ func (conn *Conn) receivePacket() (*Packet, error) {
 	if err != nil {
 		return nil, err
 	}
-	Logger.Debugf("receive header: %v", headerBuf)
 
 	if len(headerBuf) <= 0 {
 		return nil, io.EOF

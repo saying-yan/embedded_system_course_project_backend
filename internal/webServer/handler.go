@@ -83,9 +83,21 @@ func OrderSong(c *gin.Context) {
 	deviceID := id.(uint32)
 	req := OrderSongRequest{}
 	c.BindJSON(&req)
+	resp := NewBaseResponse()
 
 	err := provider.GetDeviceProvider(deviceID).OrderSong(req.SongID)
-	resp := NewBaseResponse()
+	if err != nil {
+		resp.WithError(err)
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+
+	song := provider.GetDeviceProvider(deviceID).GetCurSong()
+	if song == nil {
+		nextSongID := provider.GetDeviceProvider(deviceID).GetNextSongID()
+		err = connector.ConnPool.GetConn(deviceID).PlayMusic(nextSongID)
+	}
+
 	if err != nil {
 		resp.WithError(err)
 	} else {

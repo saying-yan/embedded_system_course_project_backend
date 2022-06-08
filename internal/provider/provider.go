@@ -17,6 +17,7 @@ const (
 type DeviceProvider struct {
 	DeviceInfo  *DeviceInfo
 	Songs       map[uint32]*Song
+	CurSong     uint32
 	totalList   []uint32
 	orderedList []uint32
 	rwLock      sync.RWMutex
@@ -37,6 +38,7 @@ func SetDeviceInfo(d *DeviceInfo) {
 		Provider.Devices[d.ID] = &DeviceProvider{
 			DeviceInfo:  d,
 			Songs:       make(map[uint32]*Song),
+			CurSong:     0,
 			totalList:   nil,
 			orderedList: nil,
 		}
@@ -67,17 +69,20 @@ func (p *DeviceProvider) GetNextSongID() uint32 {
 	p.rwLock.Lock()
 	defer p.rwLock.Unlock()
 
+	var nextSong uint32
 	if len(p.orderedList) == 0 {
-		return 0
+		nextSong = 0
 	} else if len(p.orderedList) == 1 {
 		songID := p.orderedList[0]
 		p.orderedList = nil
-		return songID
+		nextSong = songID
 	} else {
 		songID := p.orderedList[0]
 		p.orderedList = p.orderedList[1:]
-		return songID
+		nextSong = songID
 	}
+	p.CurSong = nextSong
+	return nextSong
 }
 
 func (p *DeviceProvider) GetList(listType int) ([]*Song, error) {
@@ -100,6 +105,14 @@ func (p *DeviceProvider) GetList(listType int) ([]*Song, error) {
 		return nil, ErrUnknownListType
 	}
 	return songs, nil
+}
+
+func (p *DeviceProvider) GetCurSong() *Song {
+	p.rwLock.RLock()
+	defer p.rwLock.RUnlock()
+
+	curSongID := p.CurSong
+	return p.Songs[curSongID]
 }
 
 func (p *DeviceProvider) OrderSong(songID uint32) error {
