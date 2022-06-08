@@ -3,6 +3,7 @@ package web_server
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/saying-yan/embedded_system_course_project_backend/internal/connector"
+	"github.com/saying-yan/embedded_system_course_project_backend/internal/logger"
 	"github.com/saying-yan/embedded_system_course_project_backend/internal/provider"
 	"net/http"
 	"strconv"
@@ -96,6 +97,7 @@ func OrderSong(c *gin.Context) {
 	if song == nil {
 		nextSongID := provider.GetDeviceProvider(deviceID).GetNextSongID()
 		err = connector.ConnPool.GetConn(deviceID).PlayMusic(nextSongID)
+		logger.Logger.Debugf("[conn %d] play music %d", deviceID, nextSongID)
 	}
 
 	if err != nil {
