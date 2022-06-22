@@ -44,9 +44,26 @@ const docTemplate = `{
                 }
             }
         },
+        "/:deviceID/nextSong": {
+            "post": {
+                "description": "直接播放下一首歌",
+                "consumes": [
+                    "application/json"
+                ],
+                "summary": "下一首歌",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/web_server.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/:deviceID/orderSong": {
             "post": {
-                "description": "点歌",
+                "description": "点歌，将歌曲加入点歌歌单",
                 "consumes": [
                     "application/json"
                 ],

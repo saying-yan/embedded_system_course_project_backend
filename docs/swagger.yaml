@@ -65,11 +65,22 @@ paths:
           schema:
             $ref: '#/definitions/web_server.SongListResponse'
       summary: 获取歌曲列表
+  /:deviceID/nextSong:
+    post:
+      consumes:
+      - application/json
+      description: 直接播放下一首歌
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/web_server.BaseResponse'
+      summary: 下一首歌
   /:deviceID/orderSong:
     post:
       consumes:
       - application/json
-      description: 点歌
+      description: 点歌，将歌曲加入点歌歌单
       parameters:
       - description: 参数
         in: body
